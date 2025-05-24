@@ -13,6 +13,15 @@ add_executable(DigitalJournal main.cpp
         RepositoryLayer/CSVRepo.cpp
         RepositoryLayer/CSVRepo.h
         RepositoryLayer/JSONRepo.cpp
-        RepositoryLayer/JSONRepo.h)
+        RepositoryLayer/JSONRepo.h
+        ControllerLayer/CommandPattern/Command.h
+        ControllerLayer/CommandPattern/AddCommand.h
+        ControllerLayer/CommandPattern/RemoveCommand.h
+        ControllerLayer/CommandPattern/UpdateCommand.h
+        ControllerLayer/FilterStrategy/FilterStrategy.h
+        ControllerLayer/FilterStrategy/AndFilterStrategy.h
+        ControllerLayer/FilterStrategy/OrFilterStrategy.h
+        ControllerLayer/Controller.cpp
+        ControllerLayer/Controller.h)
 
 target_link_libraries(DigitalJournal PRIVATE Qt6::Core Qt6::Widgets)
