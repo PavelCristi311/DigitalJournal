@@ -5,18 +5,19 @@
 #ifndef UPDATECOMMAND_H
 #define UPDATECOMMAND_H
 #include "Command.h"
-class RemoveCommand final : public Command {
+class UpdateCommand final : public Command {
     Repository* repo;
-    DataEntry removedEntry;
+    DataEntry oldEntry, newEntry;
     QString date;
 public:
-    RemoveCommand(Repository* r, const QString& d): repo(r), date(d) {
+    UpdateCommand(Repository* r, const QString& d, const DataEntry& n)
+        : repo(r), newEntry(n), date(d), oldEntry("", "", "") {
         auto all = repo->getAll();
         for (const auto& e : all)
             if (e.getDate() == date)
-                removedEntry = e;
+                oldEntry = e;
     }
-    void execute() override { repo->remove(date); }
-    void undo() override { repo->add(removedEntry); }
+    void execute() override { repo->update(date, newEntry); }
+    void undo() override { repo->update(date, oldEntry); }
 };
 #endif //UPDATECOMMAND_H

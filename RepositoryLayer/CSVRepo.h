@@ -8,10 +8,10 @@
 
 
 class CSVRepo final :public Repository {
-protected:
+
+public:
     void load() override;
     void save() const override;
-public:
     explicit CSVRepo(const QString &givenFilename): Repository(givenFilename){}
     void add(const DataEntry &entry) override;
     void remove(const QString &date) override;

@@ -7,11 +7,10 @@
 #include "Repository.h"
 
 
-class JSONRepo: public Repository {
-protected:
+class JSONRepo final : public Repository {
+public:
     void load() override;
     void save() const override;
-public:
     explicit JSONRepo(const QString &givenFilename):Repository(givenFilename) {}
     void add(const DataEntry &entry) override;
     void remove(const QString &date) override;

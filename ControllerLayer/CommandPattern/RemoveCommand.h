@@ -10,7 +10,7 @@ class RemoveCommand final : public Command {
     DataEntry removedEntry;
     QString date;
 public:
-    RemoveCommand(Repository* r, const QString& d): repo(r), date(d) {
+    RemoveCommand(Repository* r, const QString& d): repo(r), date(d) ,removedEntry("", "", ""){
         auto all = repo->getAll();
         for (const auto& e : all)
             if (e.getDate() == date)
