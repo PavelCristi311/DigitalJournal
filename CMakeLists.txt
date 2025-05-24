@@ -8,6 +8,11 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 add_executable(DigitalJournal main.cpp
         RepositoryLayer/DataEntry.cpp
-        RepositoryLayer/DataEntry.h)
+        RepositoryLayer/DataEntry.h
+        RepositoryLayer/Repository.h
+        RepositoryLayer/CSVRepo.cpp
+        RepositoryLayer/CSVRepo.h
+        RepositoryLayer/JSONRepo.cpp
+        RepositoryLayer/JSONRepo.h)
 
 target_link_libraries(DigitalJournal PRIVATE Qt6::Core Qt6::Widgets)
