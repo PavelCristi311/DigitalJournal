@@ -2,9 +2,8 @@ cmake_minimum_required(VERSION 3.31)
 project(DigitalJournal)
 
 set(CMAKE_CXX_STANDARD 20)
-find_package(Qt6 REQUIRED COMPONENTS Core Widgets Multimedia)
+find_package(Qt6 REQUIRED COMPONENTS Core Widgets Multimedia Network)
 
-find_package(Qt6 REQUIRED COMPONENTS Multimedia)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
@@ -29,7 +28,17 @@ add_executable(DigitalJournal main.cpp
         UILayer/MainWindow.h
         UILayer/EntryWidget.h
         resources.qrc
-        UILayer/EntryDialog.h)
+        UILayer/EntryDialog.h
+        ControllerLayer/AIHelper.cpp
+        ControllerLayer/AIHelper.h
+        API_KEY.h)
+# Enable ASan and UBSan
+# CMakeLists.txt (snippet)
+if (CMAKE_BUILD_TYPE STREQUAL "Debug" AND NOT APPLE)
+    add_compile_options(-fsanitize=address,undefined -fno-omit-frame-pointer)
+    add_link_options(-fsanitize=address,undefined)
+else()
+    message(STATUS "Sanitizers disabled on macOS")
+endif()
 
-
-target_link_libraries(DigitalJournal PRIVATE Qt6::Core Qt6::Widgets Qt6::Multimedia)
+target_link_libraries(DigitalJournal PRIVATE Qt6::Core Qt6::Widgets Qt6::Multimedia Qt6::Network)

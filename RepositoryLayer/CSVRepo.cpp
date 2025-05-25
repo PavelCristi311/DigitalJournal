@@ -11,7 +11,7 @@ void CSVRepo::load() {
     QTextStream in(&file);
     while (!in.atEnd()) {
         QString line = in.readLine();
-        QStringList parts = line.split(',');
+        QStringList parts = line.split('|');
         if (parts.size() != 3)
             continue;
         entries.emplace_back(parts[0], parts[1], parts[2]);
@@ -24,7 +24,7 @@ void CSVRepo::save() const {
         return;
     QTextStream out(&file);
     for (const auto& entry : entries) {
-        out << entry.getTitle() << "," << entry.getContent() << "," << entry.getDate() << "\n";
+        out << entry.getTitle() << "|" << entry.getContent() << "|" << entry.getDate() << "\n";
     }
     file.close();
 }
