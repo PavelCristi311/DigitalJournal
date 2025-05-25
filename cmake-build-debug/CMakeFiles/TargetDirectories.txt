@@ -1,5 +1,0 @@
-/Users/cristianpavel/CLionProjects/OOP/DigitalJournal/cmake-build-debug/CMakeFiles/DigitalJournal.dir
-/Users/cristianpavel/CLionProjects/OOP/DigitalJournal/cmake-build-debug/CMakeFiles/edit_cache.dir
-/Users/cristianpavel/CLionProjects/OOP/DigitalJournal/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/Users/cristianpavel/CLionProjects/OOP/DigitalJournal/cmake-build-debug/CMakeFiles/DigitalJournal_autogen_timestamp_deps.dir
-/Users/cristianpavel/CLionProjects/OOP/DigitalJournal/cmake-build-debug/CMakeFiles/DigitalJournal_autogen.dir

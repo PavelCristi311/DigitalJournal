@@ -1,2 +1,0 @@
-set(__QT_DEPLOY_TARGET_DigitalJournal_FILE /Users/cristianpavel/CLionProjects/OOP/DigitalJournal/cmake-build-debug/DigitalJournal)
-set(__QT_DEPLOY_TARGET_DigitalJournal_TYPE EXECUTABLE)

@@ -1,6 +1,0 @@
-/Users/cristianpavel/Applications/CLion.app/Contents/bin/cmake/mac/aarch64/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=/Users/cristianpavel/Applications/CLion.app/Contents/bin/ninja/mac/aarch64/ninja -G Ninja -S /Users/cristianpavel/CLionProjects/OOP/DigitalJournal -B /Users/cristianpavel/CLionProjects/OOP/DigitalJournal/cmake-build-debug
--- Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR) 
--- Sanitizers disabled on macOS
--- Configuring done (0.4s)
--- Generating done (0.1s)
--- Build files have been written to: /Users/cristianpavel/CLionProjects/OOP/DigitalJournal/cmake-build-debug
