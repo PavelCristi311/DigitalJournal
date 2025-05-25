@@ -5,15 +5,15 @@
 #ifndef UPDATECOMMAND_H
 #define UPDATECOMMAND_H
 #include "Command.h"
+
+#include <utility>
 class UpdateCommand final : public Command {
     Repository* repo;
     DataEntry oldEntry, newEntry;
     QString date;
 public:
-    UpdateCommand(Repository* r, const QString& d, const DataEntry& n)
-        : repo(r), newEntry(n), date(d), oldEntry("", "", "") {
-        auto all = repo->getAll();
-        for (const auto& e : all)
+    UpdateCommand(Repository* r, QString  d, DataEntry  n): repo(r), oldEntry("", "", ""), newEntry(std::move(n)), date(std::move(d)) {
+        for (const auto all = repo->getAll(); const auto& e : all)
             if (e.getDate() == date)
                 oldEntry = e;
     }

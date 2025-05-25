@@ -5,14 +5,15 @@
 #ifndef REMOVECOMMAND_H
 #define REMOVECOMMAND_H
 #include "Command.h"
+
+#include <utility>
 class RemoveCommand final : public Command {
     Repository* repo;
     DataEntry removedEntry;
     QString date;
 public:
-    RemoveCommand(Repository* r, const QString& d): repo(r), date(d) ,removedEntry("", "", ""){
-        auto all = repo->getAll();
-        for (const auto& e : all)
+    RemoveCommand(Repository* r, QString  d): repo(r), removedEntry("", "", "") ,date(std::move(d)){
+        for (const auto all = repo->getAll(); const auto& e : all)
             if (e.getDate() == date)
                 removedEntry = e;
     }

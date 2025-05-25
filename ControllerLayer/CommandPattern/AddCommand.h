@@ -6,11 +6,13 @@
 #define ADDCOMMAND_H
 #include "Command.h"
 
+#include <utility>
+
 class AddCommand final : public Command {
     Repository* repo;
     DataEntry entry;
 public:
-    AddCommand(Repository* r, const DataEntry& e) : repo(r), entry(e) {}
+    AddCommand(Repository* r, DataEntry  e) : repo(r), entry(std::move(e)) {}
     void execute() override { repo->add(entry); }
     void undo() override { repo->remove(entry.getDate()); }
 };

@@ -11,7 +11,7 @@
 class FilterStrategy {
 public:
     virtual ~FilterStrategy() = default;
-    virtual std::vector<DataEntry> filter(const std::vector<DataEntry>& entries) const = 0;
+    [[nodiscard]] virtual std::vector<DataEntry> filter(const std::vector<DataEntry>& entries) const = 0;
 };
 
 #endif //FILTERSTRATEGY_H
