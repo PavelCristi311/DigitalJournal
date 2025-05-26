@@ -12,8 +12,13 @@ int main(int argc, char *argv[]) {
     repo.load();
     CSVRepo repo2("journal.csv");
     repo2.load();
-    Controller controller(&repo2);
+    CSVRepo repo3("1000_entries.csv");
+    repo3.load();
+    Controller controller(&repo3);
     MainWindow window(&controller);
     window.show();
+    repo3.save();
+    repo2.save();
+    repo.save();
     return QApplication::exec();
 }
