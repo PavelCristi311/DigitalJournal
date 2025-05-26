@@ -31,7 +31,8 @@ add_executable(DigitalJournal main.cpp
         UILayer/EntryDialog.h
         ControllerLayer/AIHelper.cpp
         ControllerLayer/AIHelper.h
-        API_KEY.h)
+        API_KEY.h
+        )
 # Enable ASan and UBSan
 # CMakeLists.txt (snippet)
 if (CMAKE_BUILD_TYPE STREQUAL "Debug" AND NOT APPLE)
