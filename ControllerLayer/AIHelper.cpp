@@ -3,7 +3,6 @@
 //
 
 #include "AIHelper.h"
-#include <QProcess>
 #include <QCoreApplication>
 #include <QDir>
 #include <QDebug>
@@ -13,6 +12,8 @@
 #include <QJsonArray>
 #include <QNetworkRequest>
 #include "../API_KEY.h"
+#include <algorithm>
+#include <iostream>
 
 AIHelper::AIHelper(QObject* parent) : QObject(parent) {
     connect(&networkManager, &QNetworkAccessManager::finished, this, &AIHelper::onReplyFinished);
@@ -27,12 +28,17 @@ void AIHelper::addMessage(const QString& role, const QString& content) {
 }
 
 void AIHelper::setJournalEntries(const std::vector<DataEntry>& givenEntries) {
-    journalEntries = givenEntries;
+    journalEntries.clear();
+    constexpr size_t maxEntries = 20;
+    const size_t entryCount = std::min(maxEntries, givenEntries.size());
+    journalEntries.reserve(entryCount);
+    journalEntries.insert(journalEntries.end(),
+                         givenEntries.begin(),
+                         givenEntries.begin() + entryCount);
 }
 
 void AIHelper::sendMessage(const QString& userMessage) {
     qDebug() << "Sending message with journal context to Groq API";
-
     addMessage("user", userMessage);
 
     QSslConfiguration sslConfig = QSslConfiguration::defaultConfiguration();
@@ -43,7 +49,6 @@ void AIHelper::sendMessage(const QString& userMessage) {
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
     API_KEY key;
     request.setRawHeader("Authorization", key.getKey().data());
-
     QString journalContext = "JOURNAL ENTRIES:\n\n";
     for (const auto& entry : journalEntries) {
         journalContext += "Date: " + entry.getDate() + "\n";
@@ -64,7 +69,6 @@ void AIHelper::sendMessage(const QString& userMessage) {
 
     QByteArray jsonData = QJsonDocument(body).toJson();
     qDebug() << "Request payload size: " << jsonData.size();
-
     networkManager.post(request, jsonData);
 }
 
