@@ -3,21 +3,18 @@
 //
 
 #include "MainWindow.h"
-
-#include <iostream>
-
 #include "../ControllerLayer/FilterStrategy/AndFilterStrategy.h"
 #include "../ControllerLayer/FilterStrategy/OrFilterStrategy.h"
 #include <QMessageBox>
 #include <QSoundEffect>
-#include <QUrl>
 #include "EntryWidget.h"
 #include "EntryDialog.h"
+#include "../ControllerLayer/AIHelper.h"
 
 
 MainWindow::MainWindow(Controller* ctrl, QWidget* parent)
     : QMainWindow(parent), controller(ctrl) {
-
+    controller->sortAll();
     aiHelper = new AIHelper(this);
     setupUI();
     aiHelper->setJournalEntries(controller->getAll());
@@ -32,17 +29,15 @@ MainWindow::MainWindow(Controller* ctrl, QWidget* parent)
         aiLabel->setWordWrap(true);
         aiLabel->setTextInteractionFlags(Qt::TextSelectableByMouse);
         aiLabel->setStyleSheet(
-            "background-color: #978F82;"
+            "background-color: #e8dab2;"
             "border-radius: 10px;"
             "padding: 8px 12px;"
             "margin: 2px;"
-            "color: #EAEAEA;"
+            "color: #000000;"
             "font-size: 18px;"
         );
-
         const int availableWidth = chatHistory->width() - 30;
         aiLabel->setMaximumWidth(static_cast<int>(availableWidth * 0.8));
-
         aiLabel->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::MinimumExpanding);
 
         containerLayout->addWidget(aiLabel);
@@ -76,10 +71,10 @@ void MainWindow::setupUI() {
     journalLayout->setAlignment(entryList, Qt::AlignHCenter);
     journalLayout->addWidget(entryList, 1);
 
-
     auto* formLayout = new QHBoxLayout();
     titleEdit = new QLineEdit(this);
-    titleEdit->setPlaceholderText("Title");
+    titleEdit->setPlaceholderText("Title (maximum 50 characters)");
+    titleEdit->setMaxLength(50);
     contentEdit = new QLineEdit(this);
     contentEdit->setPlaceholderText("Content");
     formLayout->addWidget(titleEdit);
@@ -90,6 +85,7 @@ void MainWindow::setupUI() {
     auto* filterLayout = new QHBoxLayout();
     filterEdit1 = new QLineEdit(this);
     filterEdit1->setPlaceholderText("Filter Title");
+    filterEdit1->setMaxLength(50);
     filterEdit2 = new QLineEdit(this);
     filterEdit2->setPlaceholderText("Filter Content");
     filterAndButton = new QPushButton("Filter AND", this);
@@ -101,7 +97,6 @@ void MainWindow::setupUI() {
     filterLayout->addWidget(filterOrButton);
     filterLayout->addWidget(showAllButton);
     journalLayout->addLayout(filterLayout);
-
 
     auto* buttonLayout = new QHBoxLayout();
     addButton = new QPushButton("Add", this);
@@ -131,7 +126,7 @@ void MainWindow::setupUI() {
 
 
     chatTitleLabel->setStyleSheet(
-        "color: #F6F3ED; "
+        "color: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #EAEAEA, stop:1 #e8dab2); "
         "background-color: #333333; "
         "border-radius: 10px; "
         "padding: 8px; "
@@ -180,21 +175,22 @@ void MainWindow::setupUI() {
     setFixedSize(1305, 800);
 }
 
-
 void MainWindow::refreshList(const std::vector<DataEntry>& entries) const {
     entryList->clear();
-
+    entryList->clearSelection();
+    entryList->setCurrentRow(-1);
+    setupListWidgetProperties();
     for (const auto& entry : entries) {
         auto* item = new QListWidgetItem();
         item->setSizeHint(QSize(200,200));
         entryList->addItem(item);
         entryList->setItemWidget(item, new EntryWidget(entry.getTitle(), entry.getDate()));
     }
-    setupListWidgetProperties();
     entryList->clearSelection();
     entryList->setCurrentRow(-1);
     if (updateButtonStates) updateButtonStates();
-    aiHelper->setJournalEntries(entries);
+    const auto data_entries = controller->getAll();
+    aiHelper->setJournalEntries(data_entries);
 }
 
 void MainWindow::onAdd() const {
@@ -213,9 +209,11 @@ void MainWindow::onUpdate() const {
     const QString date = entries[row].getDate();
     const DataEntry newEntry(titleEdit->text(), contentEdit->text(), QDateTime::currentDateTime().toString("hh:mm:ss / dd.MM.yyyy"));
     controller->update(date, newEntry);
+    controller->sortAll();
     refreshList(controller->getAll());
     titleEdit->clear();
     contentEdit->clear();
+
 }
 
 void MainWindow::onRemove() const {
@@ -224,6 +222,7 @@ void MainWindow::onRemove() const {
     const auto entries = controller->getAll();
     if (row >= static_cast<int>(entries.size())) return;
     controller->remove(entries[row].getDate());
+    controller->sortAll();
     refreshList(controller->getAll());
     titleEdit->clear();
     contentEdit->clear();
@@ -231,11 +230,13 @@ void MainWindow::onRemove() const {
 
 void MainWindow::onUndo() const {
     controller->undo();
+    controller->sortAll();
     refreshList(controller->getAll());
 }
 
 void MainWindow::onRedo() const {
     controller->redo();
+    controller->sortAll();
     refreshList(controller->getAll());
 }
 
@@ -300,7 +301,6 @@ QString MainWindow::getUserInput() {
 void MainWindow::onChatbot() const {
     const QString text = chatInput->text();
     if (text.isEmpty()) return;
-
     auto* userItem = new QListWidgetItem(chatHistory);
 
     auto* containerWidget = new QWidget();
@@ -339,6 +339,7 @@ void MainWindow::onChatbot() const {
                                qMax(containerWidget->sizeHint().height(), estimatedHeight)));
 
     chatInput->clear();
+    aiHelper->setJournalEntries(controller->getAll());
     aiHelper->sendMessage(text);
 }
 
@@ -404,12 +405,14 @@ void MainWindow::setupListWidgetProperties() const {
         "    border: 2px solid #d0d0d0; "
         "    border-radius: 30px; "
         "}"
+        R"(QListView::item {margin-top: 5px;})"
     );
+
 
     constexpr int itemWidth = 210;
     constexpr int totalItems = 4;
     constexpr int horizontalPadding = 20;
     constexpr int paddingLeftAdjustment = 10;
     constexpr int width = (itemWidth * totalItems) - 10 + horizontalPadding + paddingLeftAdjustment;
-    entryList->setFixedWidth(width-2);
+    entryList->setFixedWidth(width);
 }

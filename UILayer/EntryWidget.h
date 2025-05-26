@@ -16,6 +16,7 @@ public:
         auto* layout = new QVBoxLayout(this);
         auto* titleLabel = new QLabel(title, this);
         auto* dateLabel = new QLabel(date, this);
+        titleLabel->setWordWrap(true);
         titleLabel->setStyleSheet("font-weight: bold; color: #2B3232;");
         dateLabel->setStyleSheet("color:#2B3232");
         titleLabel->setAlignment(Qt::AlignCenter);
@@ -23,8 +24,8 @@ public:
         layout->addWidget(titleLabel);
         layout->addWidget(dateLabel);
         setLayout(layout);
-        setFixedSize(200, 200); // Square-like
-        setStyleSheet("background: #EAEAEA; border: 1px solid black; border-radius: 30px;");
+        setFixedSize(200, 200);
+        setStyleSheet("background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #EAEAEA, stop:1 #e8dab2); border: 1px solid black; border-radius: 30px;");
     }
 };
 #endif //ENTRYWIDGET_H
