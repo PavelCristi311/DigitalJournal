@@ -26,6 +26,17 @@ public:
     virtual void remove(const QString& date) = 0;
     virtual void update(const QString& date, const DataEntry& newData) = 0;
     [[nodiscard]] virtual std::vector<DataEntry> getAll() const = 0;
+    virtual void sortByDate()=0;
+    static QDateTime parseJournalDate(const QString& dateString) {
+        QStringList parts = dateString.split(" / ");
+        if (parts.size() != 2) {
+            return {};
+        }
+        const QString& timeStr = parts[0];
+        const QString& dateStr = parts[1];
+        const QString fullDateTimeStr = dateStr + " " + timeStr;
+        return QDateTime::fromString(fullDateTimeStr, "dd.MM.yyyy hh:mm:ss");
+    }
 };
 
 

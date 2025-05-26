@@ -3,6 +3,7 @@
 //
 
 #include "CSVRepo.h"
+
 void CSVRepo::load() {
     entries.clear();
     QFile file(filename);
@@ -50,5 +51,13 @@ void CSVRepo::update(const QString &date, const DataEntry &newData) {
 std::vector<DataEntry> CSVRepo::getAll() const {
     return entries;
 }
+void CSVRepo::sortByDate(){
+    std::ranges::sort(entries,  [this](const DataEntry& a, const DataEntry& b) {
+       const QDateTime dateA = parseJournalDate(a.getDate());
+       const QDateTime dateB = parseJournalDate(b.getDate());
+       return dateA > dateB;
+   });
+}
+
 
 

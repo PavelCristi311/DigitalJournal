@@ -68,3 +68,11 @@ void JSONRepo::update(const QString &date, const DataEntry &newData) {
 std::vector<DataEntry> JSONRepo::getAll() const {
     return entries;
 }
+
+void JSONRepo::sortByDate() {
+    std::sort(entries.begin(), entries.end(),  [this](const DataEntry& a, const DataEntry& b) {
+       const QDateTime dateA = parseJournalDate(a.getDate());
+       const QDateTime dateB = parseJournalDate(b.getDate());
+       return dateA > dateB;
+   });
+}

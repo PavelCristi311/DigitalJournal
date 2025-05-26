@@ -16,6 +16,7 @@ public:
     void remove(const QString &date) override;
     void update(const QString &date, const DataEntry &newData) override;
     [[nodiscard]] std::vector<DataEntry> getAll() const override;
+    void sortByDate() override;
 };
 
 
