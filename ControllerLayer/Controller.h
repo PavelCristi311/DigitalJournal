@@ -30,6 +30,7 @@ public:
 
     [[nodiscard]] std::vector<DataEntry> filter(const FilterStrategy& strategy) const;
     [[nodiscard]] std::vector<DataEntry> getAll() const;
+    void sortAll() const;
 };
 
 

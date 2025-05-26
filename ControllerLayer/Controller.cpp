@@ -41,6 +41,7 @@ void Controller::redo() {
 std::vector<DataEntry> Controller::filter(const FilterStrategy& strategy) const {
     return strategy.filter(repo->getAll());
 }
+
 std::vector<DataEntry> Controller::getAll() const {
     return repo->getAll();
 }
@@ -50,4 +51,8 @@ bool Controller::canUndo() const {
 }
 bool Controller::canRedo() const {
     return !redoStack.empty();
+}
+
+void Controller::sortAll() const {
+    repo->sortByDate();
 }
