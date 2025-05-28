@@ -8,17 +8,14 @@
 int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
     QApplication::setWindowIcon(QIcon(":images/UILayer/logo.png"));
-    JSONRepo repo("journal.json");
-    repo.load();
-    CSVRepo repo2("journal.csv");
+    JSONRepo repo1("1000JSON.json");
+    repo1.load();
+    CSVRepo repo2("1000CSV.csv");
     repo2.load();
-    CSVRepo repo3("1000_entries.csv");
-    repo3.load();
-    Controller controller(&repo3);
+    Controller controller(&repo1);
     MainWindow window(&controller);
     window.show();
-    repo3.save();
+    repo1.save();
     repo2.save();
-    repo.save();
     return QApplication::exec();
 }
