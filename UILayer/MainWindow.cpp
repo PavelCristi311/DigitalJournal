@@ -196,6 +196,7 @@ void MainWindow::refreshList(const std::vector<DataEntry>& entries) const {
 void MainWindow::onAdd() const {
     const DataEntry entry(titleEdit->text(), contentEdit->text(), QDateTime::currentDateTime().toString("hh:mm:ss / dd.MM.yyyy"));
     controller->add(entry);
+    controller->sortAll();
     refreshList(controller->getAll());
     titleEdit->clear();
     contentEdit->clear();
