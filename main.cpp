@@ -4,8 +4,10 @@
 #include "RepositoryLayer/CSVRepo.h"
 #include "ControllerLayer/Controller.h"
 #include "UILayer/MainWindow.h"
+#include "TestClass.cpp"
 
 int main(int argc, char *argv[]) {
+    TestClass::runAll();
     QApplication app(argc, argv);
     QApplication::setWindowIcon(QIcon(":images/UILayer/logo.png"));
     JSONRepo repo1("1000JSON.json");

@@ -31,6 +31,6 @@ add_executable(DigitalJournal
         ControllerLayer/AIHelper.cpp
         ControllerLayer/AIHelper.h
         API_KEY.h
-        )
-
+        TestClass.cpp
+)
 target_link_libraries(DigitalJournal PRIVATE Qt6::Core Qt6::Widgets Qt6::Multimedia Qt6::Network)
