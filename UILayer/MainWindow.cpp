@@ -11,7 +11,6 @@
 #include "EntryDialog.h"
 #include "../ControllerLayer/AIHelper.h"
 
-
 MainWindow::MainWindow(Controller* ctrl, QWidget* parent)
     : QMainWindow(parent), controller(ctrl) {
     controller->sortAll();
@@ -81,7 +80,6 @@ void MainWindow::setupUI() {
     formLayout->addWidget(contentEdit);
     journalLayout->addLayout(formLayout);
 
-
     auto* filterLayout = new QHBoxLayout();
     filterEdit1 = new QLineEdit(this);
     filterEdit1->setPlaceholderText("Filter Title");
@@ -113,7 +111,6 @@ void MainWindow::setupUI() {
 
     mainLayout->addLayout(journalLayout, 2);
 
-
     auto* chatLayout = new QVBoxLayout();
     auto* chatTitleLabel = new QLabel("Little Friend AI", this);
     chatTitleLabel->setAlignment(Qt::AlignCenter);
@@ -123,7 +120,6 @@ void MainWindow::setupUI() {
     titleFont.setLetterSpacing(QFont::AbsoluteSpacing, 2);
     titleFont.setCapitalization(QFont::AllUppercase);
     chatTitleLabel->setFont(titleFont);
-
 
     chatTitleLabel->setStyleSheet(
         "color: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #EAEAEA, stop:1 #e8dab2); "
@@ -175,11 +171,14 @@ void MainWindow::setupUI() {
     setFixedSize(1305, 800);
 }
 
-void MainWindow::refreshList(const std::vector<DataEntry>& entries) const {
+void MainWindow::refreshList(const std::vector<DataEntry>& entries) const{
     entryList->clear();
     entryList->clearSelection();
     entryList->setCurrentRow(-1);
     setupListWidgetProperties();
+
+    currentlyDisplayedEntries = entries;
+
     for (const auto& entry : entries) {
         auto* item = new QListWidgetItem();
         item->setSizeHint(QSize(200,200));
@@ -279,10 +278,9 @@ void MainWindow::onListSelectionChanged() const {
 }
 
 void MainWindow::onEntryDoubleClicked(const QListWidgetItem* item) {
-    const int row = entryList->row(item);
-    if (const auto entries = controller->getAll(); row >= 0 && row < static_cast<int>(entries.size())) {
-        const auto& e = entries[row];
-        EntryDialog dlg(e.getTitle(), e.getDate(), e.getContent(), this);
+    if (const int row = entryList->row(item); row >= 0 && row < static_cast<int>(currentlyDisplayedEntries.size())) {
+        const auto& entry = currentlyDisplayedEntries[row];
+        EntryDialog dlg(entry.getTitle(), entry.getDate(), entry.getContent(), this);
         dlg.exec();
     }
 }

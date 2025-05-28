@@ -19,7 +19,7 @@
 #include <QEvent>
 #include <QMouseEvent>
 
-class MainWindow : public QMainWindow {
+class MainWindow final : public QMainWindow {
     Q_OBJECT
     Controller* controller;
     QListWidget* entryList{};
@@ -60,6 +60,7 @@ private:
     AIHelper* aiHelper;
     QListWidget* chatHistory{};
     QLineEdit* chatInput{};
+    mutable std::vector<DataEntry> currentlyDisplayedEntries;
 protected:
     void resizeEvent(QResizeEvent* event) override;
     void updateChatMessagesWidth() const;
