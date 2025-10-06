@@ -1,5 +1,6 @@
 # Prerequisites
 *.d
+*.env
 
 # Compiled Object files
 *.slo
@@ -30,7 +31,6 @@
 *.exe
 *.out
 *.app
-API_KEY.h
 cmake-build-*/
 .idea/*
 !.idea/codeStyles

@@ -14,7 +14,7 @@ int main(int argc, char *argv[]) {
     repo1.load();
     CSVRepo repo2("1000CSV.csv");
     repo2.load();
-    Controller controller(&repo1);
+    Controller controller(&repo2);
     MainWindow window(&controller);
     window.show();
     repo1.save();

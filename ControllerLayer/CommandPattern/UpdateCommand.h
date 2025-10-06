@@ -10,14 +10,18 @@
 class UpdateCommand final : public Command {
     Repository* repo;
     DataEntry oldEntry, newEntry;
-    QString date;
+    QString oldDate;
+    QString newDate;
 public:
-    UpdateCommand(Repository* r, QString  d, DataEntry  n): repo(r), oldEntry("", "", ""), newEntry(std::move(n)), date(std::move(d)) {
-        for (const auto all = repo->getAll(); const auto& e : all)
-            if (e.getDate() == date)
+    UpdateCommand(Repository* r,QString  date,const DataEntry& updated): repo(r), oldEntry("","",""), newEntry(updated),oldDate(std::move(date)),newDate(updated.getDate()) {
+        for (auto &e: repo->getAll())
+            if (e.getDate() == oldDate) {
                 oldEntry = e;
+                break;
+            }
     }
-    void execute() override { repo->update(date, newEntry); }
-    void undo() override { repo->update(date, oldEntry); }
+
+    void execute() override { repo->update(oldDate, newEntry);; }
+    void undo() override { repo->update(newDate, oldEntry); }
 };
 #endif //UPDATECOMMAND_H

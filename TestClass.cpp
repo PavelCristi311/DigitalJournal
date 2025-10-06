@@ -196,18 +196,15 @@ private:
 public:
     static void runAll() {
         createTestFiles();
-
         try {
             testJSONRepo();
             testCSVRepo();
             testController();
             testFilterStrategies();
-
             std::cout << "All tests passed successfully!" << std::endl;
         } catch (const std::exception& e) {
             std::cerr << "Test failed: " << e.what() << std::endl;
         }
-
         cleanupTestFiles();
     }
 };

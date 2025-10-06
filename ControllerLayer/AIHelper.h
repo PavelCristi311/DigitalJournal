@@ -17,8 +17,7 @@ public:
     void addMessage(const QString& role, const QString& content);
     void sendMessage(const QString& userMessage);
     void setJournalEntries(const std::vector<DataEntry>& givenEntries);
-    [[nodiscard]] unsigned long getJEsize() const {
-    return journalEntries.size();}
+    [[nodiscard]] unsigned long getJEsize() const {return journalEntries.size();}
 signals:
     void replyReceived(const QString& reply);
 private slots:

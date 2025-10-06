@@ -8,7 +8,6 @@
 
 
 class CSVRepo final :public Repository {
-
 public:
     void load() override;
     void save() const override;
@@ -18,7 +17,6 @@ public:
     void update(const QString &date, const DataEntry &newData) override;
     [[nodiscard]] std::vector<DataEntry> getAll() const override;
     void sortByDate() override;
-
 };
 
 

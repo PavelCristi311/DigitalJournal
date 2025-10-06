@@ -11,9 +11,9 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QNetworkRequest>
-#include "../API_KEY.h"
 #include <algorithm>
 #include <iostream>
+#include <QFile>
 
 AIHelper::AIHelper(QObject* parent) : QObject(parent) {
     connect(&networkManager, &QNetworkAccessManager::finished, this, &AIHelper::onReplyFinished);
@@ -38,17 +38,54 @@ void AIHelper::setJournalEntries(const std::vector<DataEntry>& givenEntries) {
 }
 
 void AIHelper::sendMessage(const QString& userMessage) {
-    qDebug() << "Sending message with journal context to Groq API";
+    qDebug() << "Sending message with journal context to Hugging Face Router (OpenAI-compatible)";
     addMessage("user", userMessage);
 
-    QSslConfiguration sslConfig = QSslConfiguration::defaultConfiguration();
-    sslConfig.setPeerVerifyMode(QSslSocket::VerifyNone);
-
-    QNetworkRequest request(QUrl("https://api.groq.com/openai/v1/chat/completions"));
-    request.setSslConfiguration(sslConfig);
+    QNetworkRequest request(QUrl("https://router.huggingface.co/v1/chat/completions"));
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-    API_KEY key;
-    request.setRawHeader("Authorization", key.getKey().data());
+
+    if (qEnvironmentVariableIsEmpty("HUGGINGFACE_API_KEY")) {
+        auto tryLoadEnv = [](const QString& path){
+            QFile envFile(path);
+            if (!envFile.open(QIODevice::ReadOnly | QIODevice::Text)) return false;
+            while (!envFile.atEnd()) {
+                QString line = QString::fromUtf8(envFile.readLine()).trimmed();
+                if (line.isEmpty() || line.startsWith('#')) continue;
+                const int eq = line.indexOf('=');
+                if (eq <= 0) continue;
+                const QString key = line.left(eq).trimmed();
+                const QString val = line.mid(eq + 1).trimmed();
+                if (!key.isEmpty()) qputenv(key.toUtf8(), val.toUtf8());
+            }
+            envFile.close();
+            return true;
+        };
+        const QString appDir = QCoreApplication::applicationDirPath();
+        const QString curDir = QDir::currentPath();
+        const QString parentDir = QDir(curDir).absoluteFilePath("..");
+        if (!tryLoadEnv(QDir(appDir).filePath(".env"))) {
+            if (!tryLoadEnv(QDir(curDir).filePath(".env"))) {
+                tryLoadEnv(QDir(parentDir).filePath(".env"));
+            }
+        }
+    }
+
+    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+    QString apiKey = env.value("HUGGINGFACE_API_KEY").trimmed();
+    if (!apiKey.isEmpty()) {
+        qDebug() << "Loaded HF key prefix:" << (apiKey.startsWith("Bearer ") ? QString("Bear") : apiKey.left(4) + "****");
+    }
+    if (apiKey.startsWith("Bearer ")) apiKey = apiKey.mid(7).trimmed();
+    if (apiKey.isEmpty()) {
+        qWarning() << "Missing HUGGINGFACE_API_KEY";
+        emit replyReceived("Config error: missing HUGGINGFACE_API_KEY.");
+        return;
+    }
+    request.setRawHeader("Authorization", QByteArray("Bearer ") + apiKey.toUtf8());
+    request.setRawHeader("Accept", "application/json");
+    request.setRawHeader("User-Agent", "DigitalJournal/1.0 (Qt)");
+    request.setRawHeader("x-wait-for-model", "true");
+
     QString journalContext = "JOURNAL ENTRIES:\n\n";
     for (const auto& entry : journalEntries) {
         journalContext += "Date: " + entry.getDate() + "\n";
@@ -56,17 +93,19 @@ void AIHelper::sendMessage(const QString& userMessage) {
         journalContext += "Content: " + entry.getContent() + "\n\n";
     }
 
-    QJsonArray messages = conversation;
-
-    QJsonObject journalContextMsg;
-    journalContextMsg["role"] = "system";
-    journalContextMsg["content"] = journalContext;
-    messages.append(journalContextMsg);
-
     QJsonObject body;
-    body["model"] = "llama3-8b-8192";
-    body["messages"] = messages;
+    body["model"] = QStringLiteral("deepseek-ai/DeepSeek-V3.2-Exp:novita");
 
+    QJsonArray chatMsgs = conversation;
+    QJsonObject ctxMsg;
+    ctxMsg["role"] = "system";
+    ctxMsg["content"] = journalContext;
+    chatMsgs.append(ctxMsg);
+
+    body["messages"] = chatMsgs;
+    body["temperature"] = 0.7;
+    body["max_tokens"] = 256;
+    body["stream"] = false;
     QByteArray jsonData = QJsonDocument(body).toJson();
     qDebug() << "Request payload size: " << jsonData.size();
     networkManager.post(request, jsonData);
@@ -106,8 +145,11 @@ void AIHelper::onReplyFinished(QNetworkReply* reply) {
             emit replyReceived("Error: Unexpected response format");
         }
     } else {
-        const QString errorMessage = "Network error: " + reply->errorString();
-        emit replyReceived(errorMessage);
+        const int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        emit replyReceived(QString("Network error (%1): %2\nBody: %3")
+                           .arg(status)
+                           .arg(reply->errorString())
+                           .arg(QString::fromUtf8(response)));
     }
 
     reply->deleteLater();
